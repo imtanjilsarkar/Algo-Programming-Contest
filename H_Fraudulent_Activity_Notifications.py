@@ -1,53 +1,37 @@
-def get_median(count, d):
-    cum = 0
-
-    if d % 2 == 1:
-        mid = d // 2 + 1  
-        for value in range(201):
-            cum += count[value]
-            if cum >= mid:
-                return value * 1.0  
-    else:
-        first_mid = d // 2
-        second_mid = first_mid + 1
-
-        m1 = None
-        m2 = None
-
-        for value in range(201):
-            cum += count[value]
-            if m1 is None and cum >= first_mid:
-                m1 = value
-            if m2 is None and cum >= second_mid:
-                m2 = value
-                break
-        return (m1 + m2) / 2.0
-
-
 def activityNotifications(expenditure, d):
-    count = [0] * 201  
-
+    count = [0] * 201
+    notifications = 0
+    
     for i in range(d):
         count[expenditure[i]] += 1
 
-    notifications = 0
+    def get_median():
+        total = 0
+        if d % 2 == 1: 
+            for i in range(201):
+                total += count[i]
+                if total > d // 2:
+                    return i
+        else: 
+            first = None
+            for i in range(201):
+                total += count[i]
+                if total >= d // 2 and first is None:
+                    first = i
+                if total >= d // 2 + 1:
+                    return (first + i) / 2
 
     for i in range(d, len(expenditure)):
-        median = get_median(count, d)
-
+        median = get_median()
+        
         if expenditure[i] >= 2 * median:
             notifications += 1
 
-        old_value = expenditure[i - d]
-        new_value = expenditure[i]
-
-        count[old_value] -= 1
-        count[new_value] += 1
-
+        count[expenditure[i-d]] -= 1
+        count[expenditure[i]] += 1
+    
     return notifications
 
 n, d = map(int, input().split())
 expenditure = list(map(int, input().split()))
-
-ans = activityNotifications(expenditure, d)
-print(ans)
+print(activityNotifications(expenditure, d))
